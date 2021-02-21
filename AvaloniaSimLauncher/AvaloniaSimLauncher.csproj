@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\Fonts\Gravity-Bold.otf" />
+    <None Remove="Assets\Fonts\Gravity-BoldItalic.otf" />
+    <None Remove="Assets\Fonts\Gravity-Book.otf" />
+    <None Remove="Assets\Fonts\Gravity-BookItalic.otf" />
+    <None Remove="Assets\Fonts\Gravity-Italic.otf" />
+    <None Remove="Assets\Fonts\Gravity-Light.otf" />
+    <None Remove="Assets\Fonts\Gravity-LightItalic.otf" />
+    <None Remove="Assets\Fonts\Gravity-Regular.otf" />
+    <None Remove="Assets\Fonts\Gravity-UltraLight.otf" />
+    <None Remove="Assets\Fonts\Gravity-UltraLightItalic.otf" />
+    <None Remove="Assets\Fonts\LiberationMono-Bold.ttf" />
+    <None Remove="Assets\Fonts\LiberationMono-BoldItalic.ttf" />
+    <None Remove="Assets\Fonts\LiberationMono-Italic.ttf" />
+    <None Remove="Assets\Fonts\LiberationMono-Regular.ttf" />
+    <None Remove="Assets\Fonts\thesimssansbold.otf" />
+    <None Remove="Assets\Fonts\thesimssansboldsc.otf" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
+    <PackageReference Include="LiteDB" Version="5.0.10" />
+  </ItemGroup>
+</Project>

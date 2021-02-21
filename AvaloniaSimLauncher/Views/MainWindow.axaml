@@ -1,0 +1,134 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaSimLauncher.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniaSimLauncher.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        MinHeight="450"
+        MinWidth="800"
+        TransparencyLevelHint="Blur"
+        BorderThickness="0"
+        Background="Transparent"
+        Title="SimLauncher">
+  <Window.Styles>
+    <Style Selector="TextBlock.h1">
+      <Setter Property="FontFamily" Value="/Assets/Fonts/thesimssansboldsc.otf#The Sims Sans SC"/>
+      <Setter Property="FontWeight" Value="800"/>
+      <Setter Property="FontSize" Value="32"/>
+      <Setter Property="Foreground" Value="#1cb10f"/>
+      <Setter Property="TextAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="TextBlock.p">
+      <Setter Property="FontFamily" Value="/Assets/Fonts/Gravity-Book.otf#Gravity"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Foreground" Value="#000000"/>
+    </Style>
+    <Style Selector="Button.SideBar">
+      <Setter Property="FontFamily" Value="/Assets/Fonts/Gravity-Italic.otf#Gravity"/>
+      <Setter Property="FontSize" Value="18"/>
+      <Setter Property="Foreground" Value="#000000"/>
+      <Setter Property="IsHitTestVisible" Value="True"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="Transparent" CornerRadius="0" Width="200" Height="40">
+            <ContentPresenter Content="{TemplateBinding Content}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.SideBar:pointerover">
+      <Setter Property="Foreground" Value="#1cb10f"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border BorderBrush="#1cb10f" CornerRadius="0" BorderThickness="2" Width="200" Height="40">
+            <ContentPresenter Content="{TemplateBinding Content}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.SideBar:pressed">
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="#1cb10f">
+            <ContentPresenter Content="{TemplateBinding Content}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+  </Window.Styles>
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    <Grid Background="Transparent">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="200"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <Panel Grid.Column="0" Grid.Row="0" Background="#FFFFFF" Opacity="50" HorizontalAlignment="Left" Classes="SideBar">
+        <Grid Margin="0,4,0,4">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="3*"/>
+          </Grid.RowDefinitions>
+          <TextBlock Grid.Row="0" Text="SIM&#x0a;LAUNCHER" HorizontalAlignment="Center" VerticalAlignment="Top" Classes="h1"/>
+          <Button Grid.Row="1" Content="Mods" Width="200" Height="40" Classes="SideBar"/>
+          <Button Grid.Row="2" Content="Packs" Width="200" Height="40" Classes="SideBar"/>
+          <Button Grid.Row="3" Content="Exports" Width="200" Height="40" Classes="SideBar"/>
+          <Button Grid.Row="4" Content="Imports" Width="200" Height="40" Classes="SideBar"/>
+          <Button Grid.Row="5" Content="Settings" Width="200" Height="40" Classes="SideBar"/>
+          <TextBlock Grid.Row="6" Text="Version: Alpha 1.0.0" Classes="p" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+        </Grid>
+      </Panel>
+      <Panel Grid.Column="1" Grid.Row="0" Background="#0098ed" Opacity="5"/>
+      <Grid Grid.Column="1" Grid.Row="0" IsEnabled="{Binding ModListEnabled}" Margin="10, 10, 10, 10" Background="Transparent">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="0" Grid.Row="0" Text="Mod Database" Classes="h1" Foreground="#FFFFFF" HorizontalAlignment="Left" Margin="0, 0, 0, 4"/>
+        <TextBox Grid.Column="0" Grid.Row="1" Watermark="Search" Text="{Binding ModSearchText}" Classes="p" Background="#FFFFFF" BorderThickness="0" Margin="0, 0, 0, 4"/>
+        <ScrollViewer Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0, 0, 0, 4">
+        <ItemsControl Items="{Binding Items}" Background="#FFFFFF">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Grid Margin="8, 0, 8, 0">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox 
+                          Grid.Column="0"
+                          IsChecked="{Binding installed}"
+                          Content="{Binding name}"
+                          TextBlock.FontFamily="/Assets/Fonts/Gravity-Regular.otf#Gravity"
+                          TextBlock.FontSize="12"/>
+                <TextBlock Text="{Binding uiCategories}"
+                           Grid.Column="1"
+                           Classes="p"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"/>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        </ScrollViewer>
+        <Button Grid.Column="0" Grid.Row="3" Content="Select all" Background="#FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+      </Grid>
+    </Grid>
+</Window>
