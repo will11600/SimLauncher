@@ -11,9 +11,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO.Compression;
-using SimLauncher.Database;
+using SimLauncher.DataTemplates;
 using LiteDB;
 using LiteDB.Engine;
+using Avalonia.Threading;
 
 namespace SimLauncher
 {
@@ -127,43 +128,51 @@ namespace SimLauncher
             launcherDir = ResolvePath(launcherDir);
             ts3DocDir = ResolvePath(ts3DocDir);
 
-            var tasks = new List<Task>();
-
             if (!Directory.Exists(launcherDir)) { Directory.CreateDirectory(launcherDir); }
+        }
 
+        public static IEnumerable<AsyncOperation> GetModLoader()
+        {
             db = InitDatabase();
 
             var col = db.GetCollection<Mod>("mods");
             var mods = GetMods();
 
-            foreach (var mod in mods)
+            var operations = new AsyncOperation[col.Count()];
+            for (int i = 0; i < col.Count(); i++)
             {
+                var mod = mods[i];
                 var modName = Path.GetFileNameWithoutExtension(mod);
 
-                if (col.Query().Where(m => m.name == modName).Count() > 0) { continue; }
+                var op = new AsyncOperation();
 
-                var meta = GetPathMetaData(mod);
-                if (meta == null)
+                op.status = "Loading: " + mod;
+                op.Main = () =>
                 {
-                    Debug.WriteLine($"WARN: Skipped {modName} because the mod meta data was not able to be attained.");
-                    continue;
-                }
-                var file = File.ReadAllBytes(mod);
+                    if (col.Query().Where(m => m.name == modName).Count() > 0) { return; }
 
-                var newMod = new Mod
-                {
-                    uid = col.Count(),
-                    name = modName,
-                    hash = file.GetHashSHA1(),
-                    isOverride = meta.Item1,
-                    categories = meta.Item2
-                };
-                col.Insert(newMod);
+                    var meta = GetPathMetaData(mod);
+                    if (meta == null)
+                    {
+                        Debug.WriteLine($"WARN: Skipped {modName} because the mod meta data was not able to be attained.");
+                        return;
+                    }
+                    var file = File.ReadAllBytes(mod);
 
-                col.EnsureIndex(m => m.uid);
+                    var newMod = new Mod
+                    {
+                        uid = col.Count(),
+                        name = modName,
+                        hash = file.GetHashSHA1(),
+                        isOverride = meta.Item1,
+                        categories = meta.Item2
+                    };
+                    col.Insert(newMod);
 
-                tasks.Add(Task.Run(() =>
-                {
+                    col.EnsureIndex(m => m.uid);
+
+                    op.status = "Archiving: " + mod;
+
                     using (MemoryStream ms = new MemoryStream())
                     using (var gzp = new GZipStream(ms, CompressionLevel.Optimal))
                     {
@@ -171,14 +180,22 @@ namespace SimLauncher
                         lock (db) { db.FileStorage.Upload($"mod{newMod.uid}", Path.GetFileName(mod), ms); }
                         Debug.WriteLine($"Finished adding {newMod.name}!");
                     }
-                }));
+                };
+
+                operations[i] = op;
             }
 
-            Task.WhenAll(tasks).ContinueWith(task =>
+            var dispose = new AsyncOperation();
+            dispose.Main = () =>
             {
+                dispose.status = "Cleaning up...";
+
+                col = null;
+                mods = null;
                 db.Dispose();
-                DialogueBox.Send("Completed setting up database!");
-            });
+            };
+
+            return operations;
         }
 
         public static void DumpModDb()

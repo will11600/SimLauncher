@@ -4,15 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         Icon="/Assets/avalonia-logo.ico"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
+        Width="600"
+        Height="200"
         x:Class="AvaloniaSimLauncher.Views.ProgressBarDialogue"
         Title="{Binding Title}">
-  <Grid>
+  <Grid Margin="8, 8, 8, 8">
     <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Text="{Binding Status}"/>
+    <ProgressBar Grid.Row="1" Minimum="{Binding Min}" Maximum="{Binding Max}" Value="{Binding Progress}" Height="20" VerticalAlignment="Bottom"/>
   </Grid>
-  <TextBlock Text="{Binding Status}"/>
-  <ProgressBar Minimum="0" Maximum="1"/>
 </Window>

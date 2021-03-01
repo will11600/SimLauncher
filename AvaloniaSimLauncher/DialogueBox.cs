@@ -1,35 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Avalonia.Threading;
+using MessageBox.Avalonia;
+using MessageBox.Avalonia.DTO;
+using MessageBox.Avalonia.Enums;
+using System;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace SimLauncher
 {
     public static class DialogueBox
     {
-        public static MessageBoxResult SendError(string message/*, MessageBoxButton button = MessageBoxButton.OK*/)
+        private static string defaultTitle = "SimLauncher";
+
+        public static Task<ButtonResult> SendError(string message, ButtonEnum button = ButtonEnum.Ok)
         {
-            return /*MessageBox.Show(message, "Error", button, MessageBoxImage.Error);*/null;
+            var msgBox = MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams
+            {
+                ButtonDefinitions = button,
+                ContentTitle = defaultTitle,
+                ContentMessage = message,
+                Icon = Icon.Error,
+                Style = Style.Windows
+            });
+            return msgBox.Show();
         }
 
-        public static MessageBoxResult Send(string message)
+        public static Task<ButtonResult> SendError(Exception e, ButtonEnum button = ButtonEnum.Ok)
         {
-            return /*MessageBox.Show(message, "Information");*/null;
+            var msgBox = MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams
+            {
+                ButtonDefinitions = button,
+                ContentTitle = defaultTitle,
+                ContentMessage = $"{e.GetType().Name}: {e.Message}\n\n{e.StackTrace}",
+                Icon = Icon.Error,
+                Style = Style.Windows
+            });
+            return msgBox.Show();
+        }
+
+        public static Task<ButtonResult> Send(string message)
+        {
+            var msgBox = MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams
+            {
+                ButtonDefinitions = ButtonEnum.Ok,
+                ContentTitle = defaultTitle,
+                ContentMessage = message,
+                Icon = Icon.Info,
+                Style = Style.Windows
+            });
+            return msgBox.Show();
         }
         
-        public static MessageBoxResult SendWarning(string message/*, MessageBoxButton button = MessageBoxButton.OK*/)
+        public static Task<ButtonResult> SendWarning(string message, ButtonEnum button = ButtonEnum.Ok)
         {
-            return /*MessageBox.Show(message, "Warning", button, MessageBoxImage.Warning);*/null;
+            var msgBox = MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams
+            {
+                ButtonDefinitions = button,
+                ContentTitle = defaultTitle,
+                ContentMessage = message,
+                Icon = Icon.Warning,
+                Style = Style.Windows
+            });
+            return msgBox.Show();
         }
-    }
-
-    public class MessageBoxResult
-    {
-    }
-
-    public class MessageBoxButton
-    {
     }
 }

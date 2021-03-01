@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SimLauncher;
-using SimLauncher.Database;
+using SimLauncher.DataTemplates;
 using System.Collections.ObjectModel;
 
 namespace AvaloniaSimLauncher.ViewModels

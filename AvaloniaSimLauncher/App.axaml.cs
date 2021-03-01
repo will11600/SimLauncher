@@ -1,8 +1,12 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using AvaloniaSimLauncher.ViewModels;
 using AvaloniaSimLauncher.Views;
+using SimLauncher;
+using System;
+using System.Collections.Generic;
 
 namespace AvaloniaSimLauncher
 {
@@ -21,6 +25,11 @@ namespace AvaloniaSimLauncher
                 {
                     DataContext = new MainWindowViewModel(),
                 };
+
+                desktop.MainWindow.ShowDialog(new ProgressBarDialogue
+                {
+                    DataContext = new ProgressBarDialogueViewModel("Creating mod database...", ContentManager.GetModLoader())
+                });
             }
 
             base.OnFrameworkInitializationCompleted();

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimLauncher
 {
-    namespace Database
+    namespace DataTemplates
     {
         public interface IRecord
         {
@@ -26,6 +26,15 @@ namespace SimLauncher
             public string url { get; set; }
 
             public string uiCategories { get => '#' + String.Join(" #", categories); }
+        }
+
+        public class AsyncOperation
+        {
+            public string status = "";
+            public Action Main;
+
+            public AsyncOperation(Action main) => Main = main;
+            public AsyncOperation() { }
         }
     }
 }
