@@ -131,73 +131,97 @@ namespace SimLauncher
             if (!Directory.Exists(launcherDir)) { Directory.CreateDirectory(launcherDir); }
         }
 
-        public static IEnumerable<AsyncOperation> GetModLoader()
+        internal class ModLoader : IProgressBarOperation
         {
-            db = InitDatabase();
+            public int Min => 0;
+            public int Max => 100;
 
-            var col = db.GetCollection<Mod>("mods");
-            var mods = GetMods();
+            public string Status => "Importing mods into database";
 
-            var operations = new AsyncOperation[col.Count()];
-            for (int i = 0; i < col.Count(); i++)
+            private float current = 0;
+            public float Current { get => current; set => current = value; }
+
+            private List<Task> tasks = new List<Task>();
+            private float max;
+
+            public async Task Main()
             {
-                var mod = mods[i];
-                var modName = Path.GetFileNameWithoutExtension(mod);
+                db = InitDatabase();
 
-                var op = new AsyncOperation();
+                var col = db.GetCollection<Mod>("mods");
+                var mods = GetMods();
 
-                op.status = "Loading: " + mod;
-                op.Main = () =>
+                max = mods.Count() * 2;
+
+                foreach (var mod in mods)
                 {
-                    if (col.Query().Where(m => m.name == modName).Count() > 0) { return; }
-
-                    var meta = GetPathMetaData(mod);
-                    if (meta == null)
+                    tasks.Add(Task.Run(() =>
                     {
-                        Debug.WriteLine($"WARN: Skipped {modName} because the mod meta data was not able to be attained.");
-                        return;
-                    }
-                    var file = File.ReadAllBytes(mod);
+                        var modName = Path.GetFileNameWithoutExtension(mod);
+              
+                        if (col.Find(m => m.name == modName).Count() < 1)
+                        {
+                            try
+                            {
+                                var record = LoadFromDisk(mod);
+                                record.uid = col.Count();
+                                lock (col)
+                                {
+                                    col.Insert(record);
+                                    col.EnsureIndex(m => m.uid);
+                                }
 
-                    var newMod = new Mod
-                    {
-                        uid = col.Count(),
-                        name = modName,
-                        hash = file.GetHashSHA1(),
-                        isOverride = meta.Item1,
-                        categories = meta.Item2
-                    };
-                    col.Insert(newMod);
+                                tasks.Add(ArchiveModAsync(mod, record.uid));
+                            }
+                            catch (Exception e) { Debug.WriteLine(e); }
+                        }
+                    }));
+                }
 
-                    col.EnsureIndex(m => m.uid);
+                mods = null;
 
-                    op.status = "Archiving: " + mod;
-
-                    using (MemoryStream ms = new MemoryStream())
-                    using (var gzp = new GZipStream(ms, CompressionLevel.Optimal))
-                    {
-                        gzp.Write(file, 0, file.Length);
-                        lock (db) { db.FileStorage.Upload($"mod{newMod.uid}", Path.GetFileName(mod), ms); }
-                        Debug.WriteLine($"Finished adding {newMod.name}!");
-                    }
-                };
-
-                operations[i] = op;
-            }
-
-            var dispose = new AsyncOperation();
-            dispose.Main = () =>
-            {
-                dispose.status = "Cleaning up...";
+                while (tasks.Count() > 0)
+                {
+                    tasks.Remove(await Task.WhenAny(tasks.ToArray()));
+                    Current = (current / max) * 100f;
+                }
 
                 col = null;
-                mods = null;
                 db.Dispose();
-            };
-
-            return operations;
+            }
         }
 
+        private static Mod LoadFromDisk(string path)
+        {
+            if (!File.Exists(path)) { throw new FileNotFoundException(); }
+
+            var meta = GetPathMetaData(path);
+            Debug.Assert(meta != null, "Unable to obtain meta data from mod file");
+
+            var modName = Path.GetFileNameWithoutExtension(path);
+
+            var mod = new Mod
+            {
+                name = modName,
+                hash = File.ReadAllBytes(path).GetHashSHA1(),
+                isOverride = meta.Item1,
+                categories = meta.Item2
+            };
+
+            return mod;
+        }
+
+        private static async Task ArchiveModAsync(string path, int uid)
+        {
+            var file = await File.ReadAllBytesAsync(path);
+
+            using (MemoryStream ms = new MemoryStream())
+            using (var gzp = new GZipStream(ms, CompressionLevel.Optimal))
+            {
+                await gzp.WriteAsync(file, 0, file.Length);
+                using (db = InitDatabase()) { db.FileStorage.Upload($"mod{uid}", path, ms); }
+            }
+        }
         public static void DumpModDb()
         {
             using (db = InitDatabase())

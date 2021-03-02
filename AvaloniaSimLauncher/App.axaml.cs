@@ -12,6 +12,8 @@ namespace AvaloniaSimLauncher
 {
     public class App : Application
     {
+        public static IClassicDesktopStyleApplicationLifetime? Desktop;
+
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -21,15 +23,11 @@ namespace AvaloniaSimLauncher
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
+                Desktop = desktop;
+                desktop.MainWindow = new ProgressBarDialogue
                 {
-                    DataContext = new MainWindowViewModel(),
+                    DataContext = new ProgressBarDialogueViewModel("Creating mod database...", new ContentManager.ModLoader())
                 };
-
-                desktop.MainWindow.ShowDialog(new ProgressBarDialogue
-                {
-                    DataContext = new ProgressBarDialogueViewModel("Creating mod database...", ContentManager.GetModLoader())
-                });
             }
 
             base.OnFrameworkInitializationCompleted();
