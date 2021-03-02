@@ -1,5 +1,8 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
+using AvaloniaSimLauncher.Views;
 using MessageBox.Avalonia.Enums;
 using SimLauncher;
 using SimLauncher.DataTemplates;
@@ -15,46 +18,35 @@ namespace AvaloniaSimLauncher.ViewModels
 {
     class ProgressBarDialogueViewModel : ViewModelBase
     {
+        private IProgressBarOperation Operation;
+
         public string Title { get; }
 
-        public int Max => Operations.Count();
-        public int Min => 0;
-        public string Status => current?.status ?? "Initializing...";
-        public float Progress => currentIndex;
+        public int Max => Operation.Max;
+        public int Min => Operation.Min;
+        public string Status => Operation.Status;
+        public float Progress => Operation.Current;
 
-        public IEnumerable<AsyncOperation> Operations { get; }
-        private int currentIndex = 0;
-        private AsyncOperation? current;
-
-        private CancellationTokenSource source;
-
-        public ProgressBarDialogueViewModel(string title, IEnumerable<AsyncOperation> operations)
+        public ProgressBarDialogueViewModel(string title, IProgressBarOperation operation)
         {
             Title = title;
-            Operations = operations;
-            source = new CancellationTokenSource();
+            Operation = operation;
 
-            InvokeOperations(source.Token);
+            operation.Main().ContinueWith(OnCompleted);
         }
 
-        private void InvokeOperations(CancellationToken token)
+        private void OnCompleted(Task task)
         {
-            foreach (var op in Operations)
+            Dispatcher.UIThread.Post(() =>
             {
-                if (token.IsCancellationRequested) { break; }
-
-                currentIndex++;
-                current = op;
-
-                Dispatcher.UIThread.InvokeAsync(async () =>
+                var main = new MainWindow
                 {
-                    try { op.Main?.Invoke(); }
-                    catch (Exception e)
-                    {
-                        if (await DialogueBox.SendError(e, ButtonEnum.OkAbort) == ButtonResult.Abort) { source.Cancel(); }
-                    }
-                }, DispatcherPriority.Normal);
-            }
+                    DataContext = new MainWindowViewModel(),
+                };
+                main.Show();
+                App.Desktop!.MainWindow.Close();
+                App.Desktop!.MainWindow = main;
+            });
         }
     }
 }
