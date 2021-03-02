@@ -22,33 +22,31 @@ namespace AvaloniaSimLauncher.ViewModels
             set
             {
                 modSearchText = value;
-                PopulateModList();
+                FilterModList();
             }
         }
 
-        private void PopulateModList()
+        private List<Mod> GetModsFromDb()
         {
+            var mods = new List<Mod>();
             using (var db = ContentManager.InitDatabase())
             {
-                var collection = db.GetCollection<Mod>("mods");
-                if (ModSearchText.Length < 1) { Items = new ObservableCollection<Mod>(collection.FindAll()); }
-                else
-                {
-                    var nameSearch = collection.Find(m => m.name.Contains(ModSearchText, StringComparison.OrdinalIgnoreCase));
-
-                    IEnumerable<Mod>? tagSearch = null;
-                    try { tagSearch = collection.Find(m => string.Join(" ", m.categories).Contains(ModSearchText, StringComparison.OrdinalIgnoreCase)); }
-                    catch (NotImplementedException e) { Debug.WriteLine(e); }
-
-                    if (tagSearch == null) { Items = new ObservableCollection<Mod>(nameSearch); }
-                    else { Items = new ObservableCollection<Mod>(nameSearch.Union(tagSearch)); }
-                }
+                mods.InsertRange(0, db.GetCollection<Mod>("mods").FindAll());
+                return mods;
             }
+        }
+
+        private void FilterModList()
+        {
+            GetModsFromDb().ForEach(m => { if (!Items.Contains(m)) { Items.Add(m); } });
+            if (ModSearchText.Length < 1) { return; }
+            Items.Where(i => !i.name.Contains(ModSearchText, StringComparison.OrdinalIgnoreCase)).ToList().ForEach(i => Items.Remove(i));
+            Items.Where(i => !string.Join(" ", i.categories).Contains(ModSearchText, StringComparison.OrdinalIgnoreCase)).ToList().ForEach(i => Items.Remove(i));
         }
 
         public MainWindowViewModel()
         {
-            PopulateModList();
+            Items = new ObservableCollection<Mod>(GetModsFromDb());
         }
     }
 

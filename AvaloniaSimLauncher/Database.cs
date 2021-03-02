@@ -28,6 +28,15 @@ namespace SimLauncher
             public string uiCategories { get => '#' + String.Join(" #", categories); }
         }
 
+        public interface IProgressBarOperation
+        {
+            public int Min { get; }
+            public int Max { get; }
+            public string Status { get; }
+            public float Current { get; set; }
+            public Task Main();
+        }
+
         public class AsyncOperation
         {
             public string status = "";

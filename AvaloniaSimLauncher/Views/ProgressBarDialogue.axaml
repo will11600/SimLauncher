@@ -7,6 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
         Width="600"
         Height="200"
+        ExtendClientAreaToDecorationsHint="True"
         x:Class="AvaloniaSimLauncher.Views.ProgressBarDialogue"
         Title="{Binding Title}">
   <Grid Margin="8, 8, 8, 8">
@@ -14,7 +15,7 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-    <TextBlock Grid.Row="0" Text="{Binding Status}"/>
-    <ProgressBar Grid.Row="1" Minimum="{Binding Min}" Maximum="{Binding Max}" Value="{Binding Progress}" Height="20" VerticalAlignment="Bottom"/>
+    <TextBlock Grid.Row="0" Text="{Binding Status}" HorizontalAlignment="Center"/>
+    <ProgressBar Grid.Row="1" Minimum="{Binding Min}" Maximum="{Binding Max}" Value="{Binding Progress}" Height="20" IsIndeterminate="False" VerticalAlignment="Bottom"/>
   </Grid>
 </Window>
