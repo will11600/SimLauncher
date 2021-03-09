@@ -25,6 +25,7 @@
     <None Remove="Assets\Fonts\LiberationMono-Regular.ttf" />
     <None Remove="Assets\Fonts\thesimssansbold.otf" />
     <None Remove="Assets\Fonts\thesimssansboldsc.otf" />
+    <None Remove="Assets\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.0" />
@@ -33,5 +34,10 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
     <PackageReference Include="LiteDB" Version="5.0.10" />
     <PackageReference Include="MessageBox.Avalonia" Version="1.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Update="Assets\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
   </ItemGroup>
 </Project>

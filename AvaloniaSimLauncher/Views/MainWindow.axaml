@@ -29,7 +29,6 @@
       <Setter Property="FontFamily" Value="/Assets/Fonts/Gravity-Italic.otf#Gravity"/>
       <Setter Property="FontSize" Value="18"/>
       <Setter Property="Foreground" Value="#000000"/>
-      <Setter Property="IsHitTestVisible" Value="True"/>
       <Setter Property="Template">
         <ControlTemplate>
           <Border Background="Transparent" CornerRadius="0" Width="200" Height="40">
@@ -59,66 +58,104 @@
         </ControlTemplate>
       </Setter>
     </Style>
+    <Style Selector="Button.SideBar:disabled">
+      <Setter Property="Foreground" Value="#7b7b7b"/>
+    </Style>
+    <Style Selector="TabItem">
+      <Setter Property="FontFamily" Value="/Assets/Fonts/Gravity-Italic.otf#Gravity"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter 
+    </Style>
   </Window.Styles>
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
-    <Grid Background="Transparent">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="200"/>
-        <ColumnDefinition Width="*"/>
-      </Grid.ColumnDefinitions>
+  <Design.DataContext>
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
+  <Grid Background="Transparent">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="200"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Panel Grid.Column="0" Grid.Row="0" Background="#FFFFFF" Opacity="50" HorizontalAlignment="Left" Classes="SideBar">
+      <Grid Margin="0,4,0,4">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="3*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="SIM&#x0a;LAUNCHER" HorizontalAlignment="Center" VerticalAlignment="Top" Classes="h1"/>
+        <Button Grid.Row="1" Content="Mods" Width="200" Height="40" Classes="SideBar"/>
+        <Button Grid.Row="2" Content="Packs" Width="200" Height="40" Classes="SideBar" IsEnabled="False"/>
+        <Button Grid.Row="3" Content="Exports" Width="200" Height="40" Classes="SideBar" IsEnabled="False"/>
+        <Button Grid.Row="4" Content="Imports" Width="200" Height="40" Classes="SideBar" IsEnabled="False"/>
+        <Button Grid.Row="5" Content="Settings" Width="200" Height="40" Classes="SideBar"/>
+        <TextBlock Grid.Row="6" Text="Version: Alpha 1.0.0" Classes="p" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+      </Grid>
+    </Panel>
+    <Panel Grid.Column="1" Grid.Row="0" Background="#0098ed"/>
+    <Grid Grid.Column="1" Grid.Row="0" Background="Transparent" Margin="10, 10, 10, 10">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
-      <DockPanel Grid.Column="0" Grid.Row="0" Background="#FFFFFF" Opacity="50" HorizontalAlignment="Left">
-        <TextBlock DockPanel.Dock="Top" Text="SIM&#x0a;LAUNCHER" HorizontalAlignment="Center" Classes="h1" Margin="0, 8, 0, 25"/>
-        <Button DockPanel.Dock="Top" Content="Mods" Width="200" Height="40" Classes="SideBar"/>
-        <Button DockPanel.Dock="Top" Content="Packs" Width="200" Height="40" Classes="SideBar"/>
-        <Button DockPanel.Dock="Top" Content="Exports" Width="200" Height="40" Classes="SideBar"/>
-        <Button DockPanel.Dock="Top" Content="Imports" Width="200" Height="40" Classes="SideBar"/>
-        <Button DockPanel.Dock="Top" Content="Settings" Width="200" Height="40" Classes="SideBar"/>
-        <TextBlock DockPanel.Dock="Bottom" Text="Version: Alpha 1.0.0" Classes="p" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0, 0, 0, 8"/>
-      </DockPanel>
-      <Panel Grid.Column="1" Grid.Row="0" Background="#0098ed" Opacity="5"/>
-      <Grid Grid.Column="1" Grid.Row="0" IsEnabled="{Binding ModListEnabled}" Margin="10, 10, 10, 10" Background="Transparent">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0" Text="Mod Database" Classes="h1" Foreground="#FFFFFF" HorizontalAlignment="Left" Margin="0, 0, 0, 4"/>
-        <TextBox Grid.Column="0" Grid.Row="1" Watermark="Search" Text="{Binding ModSearchText}" Classes="p" Background="#FFFFFF" BorderThickness="0" Margin="0, 0, 0, 4"/>
-        <ScrollViewer Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0, 0, 0, 4">
-        <ItemsControl Items="{Binding Items}" Background="#FFFFFF">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Grid Margin="8, 0, 8, 0">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*"/>
-                  <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <CheckBox 
-                          Grid.Column="0"
-                          IsChecked="{Binding installed}"
-                          Content="{Binding name}"
-                          TextBlock.FontFamily="/Assets/Fonts/Gravity-Regular.otf#Gravity"
-                          TextBlock.FontSize="12"/>
-                <TextBlock Text="{Binding uiCategories}"
-                           Grid.Column="1"
-                           Classes="p"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"/>
-              </Grid>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        </ScrollViewer>
-        <Button Grid.Column="0" Grid.Row="3" Content="Select all" Background="#FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-      </Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <DropDown Grid.Row="0" Grid.Column="1" SelectedIndex="1" VerticalAlignment="Top">
+        <DropDownItem Content="Sims 4"/>
+        <DropDownItem Content="Sims 3"/>
+        <DropDownItem Content="Sims 2"/>       
+      </DropDown>
+      <TabControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+        <TabItem Header="Library">
+          <Grid Background="Transparent">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
+              <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBox Grid.Column="0" Grid.Row="1" Watermark="Search" Text="{Binding ModSearchText}" Classes="p" Background="#FFFFFF" BorderThickness="0" Margin="0, 0, 0, 4"/>
+            <ScrollViewer Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0, 0, 0, 4">
+              <ItemsControl Items="{Binding Items}" Background="#FFFFFF">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Grid Margin="8, 0, 8, 0">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                      </Grid.ColumnDefinitions>
+                      <CheckBox
+                                Grid.Column="0"
+                                IsChecked="{Binding installed}"
+                                Content="{Binding name}"
+                                TextBlock.FontFamily="/Assets/Fonts/Gravity-Regular.otf#Gravity"
+                                TextBlock.FontSize="12"/>
+                      <TextBlock Text="{Binding uiCategories}"
+                                 Grid.Column="1"
+                                 Classes="p"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Center"/>
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+            <Button Grid.Column="0" Grid.Row="3" Content="Select all" Background="#FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+          </Grid>
+        </TabItem>
+        <TabItem Header="Collections">
+
+        </TabItem>
+      </TabControl>
     </Grid>
+  </Grid>
 </Window>
