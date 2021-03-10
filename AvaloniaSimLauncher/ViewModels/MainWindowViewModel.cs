@@ -5,6 +5,8 @@ using System.Linq;
 using SimLauncher;
 using SimLauncher.DataTemplates;
 using System.Collections.ObjectModel;
+using ReactiveUI;
+using System.Reactive;
 
 namespace AvaloniaSimLauncher.ViewModels
 {

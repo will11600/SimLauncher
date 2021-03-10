@@ -1,4 +1,5 @@
 ﻿using LiteDB;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace SimLauncher
             public string url { get; set; }
 
             public string uiCategories { get => '#' + String.Join(" #", categories); }
+            public bool active { get => false; }
         }
 
         public interface IProgressBarOperation

@@ -23,12 +23,12 @@
     <Style Selector="TextBlock.p">
       <Setter Property="FontFamily" Value="/Assets/Fonts/Gravity-Book.otf#Gravity"/>
       <Setter Property="FontSize" Value="12"/>
-      <Setter Property="Foreground" Value="#000000"/>
+      <Setter Property="Foreground" Value="Black"/>
     </Style>
     <Style Selector="Button.SideBar">
       <Setter Property="FontFamily" Value="/Assets/Fonts/Gravity-Italic.otf#Gravity"/>
       <Setter Property="FontSize" Value="18"/>
-      <Setter Property="Foreground" Value="#000000"/>
+      <Setter Property="Foreground" Value="Black"/>
       <Setter Property="Template">
         <ControlTemplate>
           <Border Background="Transparent" CornerRadius="0" Width="200" Height="40">
@@ -61,9 +61,62 @@
     <Style Selector="Button.SideBar:disabled">
       <Setter Property="Foreground" Value="#7b7b7b"/>
     </Style>
+    <Style Selector="TabControl">
+      <Setter Property="Background" Value="#F0F0F0"/>
+      <Setter Property="Padding" Value="4 4 4 4"/>
+    </Style>
+    <Style Selector="TabControl Border">
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="TabControl WrapPanel">
+      <Setter Property="Background" Value="#0098ed"/>
+    </Style>
     <Style Selector="TabItem">
-      <Setter Property="FontFamily" Value="/Assets/Fonts/Gravity-Italic.otf#Gravity"/>
+      <Setter Property="FontFamily" Value="/Assets/Fonts/Gravity.otf#Gravity"/>
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+      <Setter Property="Background" Value="Transparent"/>
       <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Margin" Value="0"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+    <Style Selector="TabItem /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Padding" Value="10 5 10 5"/>
+      <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    </Style>
+    <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="TabItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#F0F0F0"/>
+      <Setter Property="Opacity" Value="90"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="TabItem:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#f0f0f0"/>
+    </Style>
+    <Style Selector="TabItem:selected">
+      <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style Selector="TabItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#f0f0f0"/>
+    </Style>
+    <Style Selector="Button.Mod">
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+    <Style Selector="Button.Mod /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Background" Value="White"/>
+      <Setter Property="CornerRadius" Value="0"/>
+    </Style>
+    <Style Selector="Button.Mod:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#F0F0F0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="CheckBox /template/ Border#border">
+      <Setter Property="BorderBrush" Value="#0098ed"/>
     </Style>
   </Window.Styles>
   <Design.DataContext>
@@ -77,7 +130,7 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
-    <Panel Grid.Column="0" Grid.Row="0" Background="#FFFFFF" Opacity="50" HorizontalAlignment="Left" Classes="SideBar">
+    <Panel Grid.Column="0" Grid.Row="0" Background="White" Opacity="50" HorizontalAlignment="Left" Classes="SideBar">
       <Grid Margin="0,4,0,4">
         <Grid.RowDefinitions>
           <RowDefinition Height="3*"/>
@@ -105,11 +158,6 @@
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
-      <DropDown Grid.Row="0" Grid.Column="1" SelectedIndex="1" VerticalAlignment="Top">
-        <DropDownItem Content="Sims 4"/>
-        <DropDownItem Content="Sims 3"/>
-        <DropDownItem Content="Sims 2"/>       
-      </DropDown>
       <TabControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
         <TabItem Header="Library">
           <Grid Background="Transparent">
@@ -123,38 +171,50 @@
               <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBox Grid.Column="0" Grid.Row="1" Watermark="Search" Text="{Binding ModSearchText}" Classes="p" Background="#FFFFFF" BorderThickness="0" Margin="0, 0, 0, 4"/>
-            <ScrollViewer Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0, 0, 0, 4">
-              <ItemsControl Items="{Binding Items}" Background="#FFFFFF">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate>
-                    <Grid Margin="8, 0, 8, 0">
-                      <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                      </Grid.ColumnDefinitions>
-                      <CheckBox
-                                Grid.Column="0"
-                                IsChecked="{Binding installed}"
-                                Content="{Binding name}"
-                                TextBlock.FontFamily="/Assets/Fonts/Gravity-Regular.otf#Gravity"
-                                TextBlock.FontSize="12"/>
-                      <TextBlock Text="{Binding uiCategories}"
-                                 Grid.Column="1"
-                                 Classes="p"
-                                 HorizontalAlignment="Right"
-                                 VerticalAlignment="Center"/>
-                    </Grid>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
-            <Button Grid.Column="0" Grid.Row="3" Content="Select all" Background="#FFFFFF" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+            <Border Grid.Column="0" Grid.Row="2" CornerRadius="4" BorderThickness="1" BorderBrush="White" Margin="0, 0, 0, 4">
+              <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ClipToBounds="True">
+                <ItemsControl Items="{Binding Items}" Background="White">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Button Classes="Mod">
+                        <DockPanel Margin="8, 0, 8, 0">
+                          <CheckBox DockPanel.Dock="Left"
+                                    IsChecked="{Binding active}"
+                                    Content="{Binding name}"
+                                    TextBlock.FontFamily="/Assets/Fonts/Gravity-Regular.otf#Gravity"
+                                    TextBlock.FontSize="12"/>
+                          <TextBlock Text="{Binding uiCategories}"
+                                     DockPanel.Dock="Right"
+                                     Classes="p"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Center"/>
+                        </DockPanel>
+                      </Button>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+            </Border>
+            <DockPanel Grid.Column="0" Grid.Row="3">
+              <Button DockPanel.Dock="Right" Content="Select all"/>
+              <Button DockPanel.Dock="Right" Content="Select none"/>
+              <Button DockPanel.Dock="Left" Content="Apply"/>
+              <Button DockPanel.Dock="Left" Content="Revert"/>
+            </DockPanel>
           </Grid>
         </TabItem>
         <TabItem Header="Collections">
 
         </TabItem>
+        <TabItem Header="Tags">
+
+        </TabItem>
       </TabControl>
+      <DropDown Grid.Row="0" Grid.Column="1" SelectedIndex="1" VerticalAlignment="Top">
+        <DropDownItem Content="Sims 4"/>
+        <DropDownItem Content="Sims 3"/>
+        <DropDownItem Content="Sims 2"/>
+      </DropDown>
+      </Grid>
     </Grid>
-  </Grid>
 </Window>
