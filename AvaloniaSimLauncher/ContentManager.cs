@@ -15,6 +15,7 @@ using SimLauncher.DataTemplates;
 using LiteDB;
 using LiteDB.Engine;
 using Avalonia.Threading;
+using ReactiveUI;
 
 namespace SimLauncher
 {
@@ -76,15 +77,14 @@ namespace SimLauncher
 
         private static DbManager db;
 
-        private static string ts3DocDir = @"%USERPROFILE%\Documents\Electronic Arts\The Sims 3";
+        private static string ts3DocDir = @"C:\Users\wb116\Documents\Electronic Arts\Sims 3";
         private static string launcherDir = @"%LOCALAPPDATA%\SimLauncher";
+        private static string modPath;
 
         private static string ResolvePath(string stringWEnvVars)
         {
             return Environment.ExpandEnvironmentVariables(stringWEnvVars);
         }
-
-        private static string modPath = ResolvePath(ts3DocDir) + @"\Mods";
 
         public static string[] GetMods()
         {
@@ -97,7 +97,7 @@ namespace SimLauncher
             {
                 var folder = foldersToSearch.Dequeue();
                 Array.ForEach(Directory.GetDirectories(folder), f => foldersToSearch.Enqueue(f));
-                Array.ForEach(Directory.GetFiles(folder, "*.package"), f => files.Add(f));
+                files.AddRange(Directory.GetFiles(folder, "*.package"));
             }
 
             return files.ToArray();
@@ -127,28 +127,23 @@ namespace SimLauncher
         {
             launcherDir = ResolvePath(launcherDir);
             ts3DocDir = ResolvePath(ts3DocDir);
+            modPath = Path.Combine(ts3DocDir, "Mods");
 
             if (!Directory.Exists(launcherDir)) { Directory.CreateDirectory(launcherDir); }
         }
 
-        internal class ModLoader : IProgressBarOperation
+        internal class ModLoader : ProgressBarOperation
         {
-            public int Min => 0;
-            public int Max => 100;
-
-            public string Status => "Importing mods into database";
-
-            private float current = 0;
-            public float Current { get => current; set => current = value; }
-
             private List<Task> tasks = new List<Task>();
-            private float max;
+            private int max;
 
-            public async Task Main()
+            public override async Task Main()
             {
                 db = InitDatabase();
 
+                Status = "Reading mod list from database...";
                 var col = db.GetCollection<Mod>("mods");
+                Status = "Scanning mod directory...";
                 var mods = GetMods();
 
                 max = mods.Count() * 2;
@@ -161,19 +156,16 @@ namespace SimLauncher
               
                         if (col.Find(m => m.name == modName).Count() < 1)
                         {
-                            try
+                            lock (Status) { Status = $"Importing: {mod}..."; }
+                            var record = LoadFromDisk(mod);
+                            record.uid = col.Count();
+                            lock (col)
                             {
-                                var record = LoadFromDisk(mod);
-                                record.uid = col.Count();
-                                lock (col)
-                                {
-                                    col.Insert(record);
-                                    col.EnsureIndex(m => m.uid);
-                                }
-
-                                tasks.Add(ArchiveModAsync(mod, record.uid));
+                                col.Insert(record);
+                                col.EnsureIndex(m => m.uid);
                             }
-                            catch (Exception e) { Debug.WriteLine(e); }
+
+                            tasks.Add(ArchiveModAsync(mod, record.uid));
                         }
                     }));
                 }
@@ -183,8 +175,10 @@ namespace SimLauncher
                 while (tasks.Count() > 0)
                 {
                     tasks.Remove(await Task.WhenAny(tasks.ToArray()));
-                    Current = (current / max) * 100f;
+                    Current = (int)((Current / max) * 100f);
                 }
+
+                Status = "Cleaning up...";
 
                 col = null;
                 db.Dispose();
@@ -193,10 +187,8 @@ namespace SimLauncher
 
         private static Mod LoadFromDisk(string path)
         {
-            if (!File.Exists(path)) { throw new FileNotFoundException(); }
-
             var meta = GetPathMetaData(path);
-            Debug.Assert(meta != null, "Unable to obtain meta data from mod file");
+            Debug.Assert(meta != null, "Unable to obtain meta data from mod file", path);
 
             var modName = Path.GetFileNameWithoutExtension(path);
 

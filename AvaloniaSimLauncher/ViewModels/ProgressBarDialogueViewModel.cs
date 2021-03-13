@@ -18,21 +18,21 @@ namespace AvaloniaSimLauncher.ViewModels
 {
     class ProgressBarDialogueViewModel : ViewModelBase
     {
-        private IProgressBarOperation Operation;
+        private ProgressBarOperation Operation;
 
         public string Title { get; }
 
         public int Max => Operation.Max;
         public int Min => Operation.Min;
         public string Status => Operation.Status;
-        public float Progress => Operation.Current;
+        public int Progress => Operation.Current;
 
-        public ProgressBarDialogueViewModel(string title, IProgressBarOperation operation)
+        public ProgressBarDialogueViewModel(string title, ProgressBarOperation operation)
         {
             Title = title;
             Operation = operation;
 
-            operation.Main().ContinueWith(OnCompleted);
+            Operation.Main().ContinueWith(OnCompleted);
         }
 
         private void OnCompleted(Task task)

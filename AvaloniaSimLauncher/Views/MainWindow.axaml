@@ -131,23 +131,19 @@
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <Panel Grid.Column="0" Grid.Row="0" Background="White" Opacity="50" HorizontalAlignment="Left" Classes="SideBar">
-      <Grid Margin="0,4,0,4">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="3*"/>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="3*"/>
-        </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="SIM&#x0a;LAUNCHER" HorizontalAlignment="Center" VerticalAlignment="Top" Classes="h1"/>
-        <Button Grid.Row="1" Content="Mods" Width="200" Height="40" Classes="SideBar"/>
-        <Button Grid.Row="2" Content="Packs" Width="200" Height="40" Classes="SideBar" IsEnabled="False"/>
-        <Button Grid.Row="3" Content="Exports" Width="200" Height="40" Classes="SideBar" IsEnabled="False"/>
-        <Button Grid.Row="4" Content="Imports" Width="200" Height="40" Classes="SideBar" IsEnabled="False"/>
-        <Button Grid.Row="5" Content="Settings" Width="200" Height="40" Classes="SideBar"/>
-        <TextBlock Grid.Row="6" Text="Version: Alpha 1.0.0" Classes="p" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
-      </Grid>
+      <DockPanel Margin="8">
+        <TextBlock DockPanel.Dock="Top" Text="SIM&#x0a;LAUNCHER" HorizontalAlignment="Center" VerticalAlignment="Top" Classes="h1"/>
+        <TabControl DockPanel.Dock="Top" TabStripPlacement="Left">
+          <TabItem Header="Mods">
+            
+          </TabItem>
+          <TabItem Header="Settings">
+            
+          </TabItem>
+        </TabControl>
+        <Button DockPanel.Dock="Top" Content="Play" Classes="SideBar"/>
+        <TextBlock DockPanel.Dock="Top" Text="Version: Alpha 1.0.0" Classes="p" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+      </DockPanel>
     </Panel>
     <Panel Grid.Column="1" Grid.Row="0" Background="#0098ed"/>
     <Grid Grid.Column="1" Grid.Row="0" Background="Transparent" Margin="10, 10, 10, 10">

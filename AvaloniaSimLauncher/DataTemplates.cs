@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReactiveUI;
 
 namespace SimLauncher
 {
@@ -29,23 +30,34 @@ namespace SimLauncher
             public string uiCategories { get => '#' + String.Join(" #", categories); }
             public bool active { get => false; }
         }
-
-        public interface IProgressBarOperation
+        
+        public abstract class ProgressBarOperation : ReactiveObject
         {
-            public int Min { get; }
-            public int Max { get; }
-            public string Status { get; }
-            public float Current { get; set; }
-            public Task Main();
+            public int Min = 0;
+            public int Max = 100;
+
+            private string status = "";
+            public string Status
+            {
+                get => status;
+                set => this.RaiseAndSetIfChanged(ref status, value);
+            }
+
+            private int current = 0;
+            public int Current
+            {
+                get => current;
+                set => this.RaiseAndSetIfChanged(ref current, value);
+            }
+
+            public abstract Task Main();
         }
 
-        public class AsyncOperation
+        public class ModCollection : IRecord
         {
-            public string status = "";
-            public Action Main;
-
-            public AsyncOperation(Action main) => Main = main;
-            public AsyncOperation() { }
+            public int uid { get; set; }
+            public List<int> modUids { get; set; }
+            public string author { get; set; }
         }
     }
 }
